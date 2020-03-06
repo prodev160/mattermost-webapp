@@ -116,6 +116,14 @@ export function isAdmin(roles) {
     return false;
 }
 
+export function isVisitor(roles) {
+    if (isInRole(roles, 'system_visitor')) {
+        return true;
+    }
+
+    return false;
+}
+
 export function isSystemAdmin(roles) {
     if (isInRole(roles, 'system_admin')) {
         return true;

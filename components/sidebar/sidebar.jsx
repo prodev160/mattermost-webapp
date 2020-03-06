@@ -605,6 +605,8 @@ class Sidebar extends React.PureComponent {
         const {orderedChannelIds} = this.state;
 
         const sectionsToHide = [SidebarChannelGroups.UNREADS, SidebarChannelGroups.FAVORITE];
+        const isVisitor = Utils.isVisitor(this.props.currentUser.roles);
+        console.log(this.props.currentUser.roles);
 
         return (
             <Scrollbars
@@ -655,6 +657,7 @@ class Sidebar extends React.PureComponent {
                                             browsePublicDirectChannels={this.showMorePublicDirectChannelsModal}
                                         />
                                     </h4>
+                                    {(section.type != 'direct' || !isVisitor) &&
                                     <ChannelCreate
                                         sectionType={section.type}
                                         canCreatePublicChannel={this.props.canCreatePublicChannel}
@@ -664,8 +667,10 @@ class Sidebar extends React.PureComponent {
                                         createDirectMessage={this.handleOpenMoreDirectChannelsModal}
                                         createPublicDirectChannel={this.showNewPublicChannelModal}
                                     />
+                                    }
                                 </li>
                                 {section.items}
+                                {(section.type != 'direct' || !isVisitor) && 
                                 <ChannelMore
                                     currentTeamId={this.props.currentTeam.id}
                                     sectionType={section.type}
@@ -674,6 +679,7 @@ class Sidebar extends React.PureComponent {
                                     browsePublicDirectChannels={this.showMorePublicDirectChannelsModal}
                                     viewArchivedChannels={this.props.viewArchivedChannels}
                                 />
+                                }
                             </ul>
                         );
                     })}
@@ -685,7 +691,7 @@ class Sidebar extends React.PureComponent {
     render() {
         const {channelSwitcherOption} = this.props;
         const ariaLabel = Utils.localizeMessage('accessibility.sections.lhsList', 'channel sidebar region');
-
+        
         // Check if we have all info needed to render
         if (this.props.currentTeam == null || this.props.currentUser == null) {
             return (<div/>);

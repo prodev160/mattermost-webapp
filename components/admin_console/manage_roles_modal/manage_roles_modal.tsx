@@ -31,6 +31,7 @@ type State = {
     hasPostAllPublicRole: boolean;
     hasUserAccessTokenRole: boolean;
     isSystemAdmin: boolean;
+    isVisitor: boolean;         // Added by Sasa
 }
 
 function getStateFromProps(props: Props): State {
@@ -43,6 +44,7 @@ function getStateFromProps(props: Props): State {
         hasPostAllPublicRole: UserUtils.hasPostAllPublicRole(roles),
         hasUserAccessTokenRole: UserUtils.hasUserAccessTokenRole(roles),
         isSystemAdmin: UserUtils.isSystemAdmin(roles),
+        isVisitor: UserUtils.isVisitor(roles)         // Added by Sasa
     };
 }
 
@@ -70,9 +72,12 @@ export default class ManageRolesModal extends React.PureComponent<Props, State> 
 
     handleSystemAdminChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.name === 'systemadmin') {
-            this.setState({isSystemAdmin: true});
+            this.setState({isSystemAdmin: true, isVisitor: false});
         } else if (e.target.name === 'systemmember') {
-            this.setState({isSystemAdmin: false});
+            this.setState({isSystemAdmin: false, isVisitor: false});
+        } else if (e.target.name === 'systemvisitor') {
+            // Added by Sasa
+            this.setState({isSystemAdmin: false, isVisitor: true});
         }
     };
 
@@ -128,6 +133,11 @@ export default class ManageRolesModal extends React.PureComponent<Props, State> 
             } else if (this.state.hasPostAllPublicRole) {
                 roles += ' ' + General.SYSTEM_POST_ALL_PUBLIC_ROLE;
             }
+        }
+
+        // Added by Sasa
+        if (this.state.isVisitor) {
+            roles += ' ' + General.SYSTEM_VISITOR_ROLE;
         }
 
         const {data} = await this.props.actions.updateUserRoles(this.props.user.id, roles);
@@ -305,12 +315,26 @@ export default class ManageRolesModal extends React.PureComponent<Props, State> 
                                 <input
                                     name='systemmember'
                                     type='radio'
-                                    checked={!this.state.isSystemAdmin}
+                                    checked={!this.state.isSystemAdmin && !this.state.isVisitor}
                                     onChange={this.handleSystemAdminChange}
                                 />
                                 <FormattedMessage
                                     id='admin.manage_roles.systemMember'
                                     defaultMessage='Member'
+                                />
+                            </label>
+                        </div>
+                        <div className='radio-inline'>
+                            <label>
+                                <input
+                                    name='systemvisitor'
+                                    type='radio'
+                                    checked={!this.state.isSystemAdmin && this.state.isVisitor}
+                                    onChange={this.handleSystemAdminChange}
+                                />
+                                <FormattedMessage
+                                    id='admin.manage_roles.systemVisitor'
+                                    defaultMessage='Visitor'
                                 />
                             </label>
                         </div>

@@ -484,6 +484,15 @@ export default class SystemUsersDropdown extends React.PureComponent<Props, Stat
             );
         }
 
+        if (user.roles.length > 0 && Utils.isVisitor(user.roles)) {
+            currentRoles = (
+                <FormattedMessage
+                    id='team_members_dropdown.systemVisitor'
+                    defaultMessage='Visitor'
+                />
+            );
+        }
+
         let showMakeActive = false;
         let showMakeNotActive = !Utils.isSystemAdmin(user.roles);
         let showManageTeams = true;
